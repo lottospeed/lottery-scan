@@ -1,0 +1,22 @@
+{
+  "name": "樂透大福星 LottoLucky",
+  "short_name": "樂透大福星",
+  "description": "全台最強彩券迷AI解夢與隨機選號工具",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme-color": "#1A1A1A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2489/2489756.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2489/2489756.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

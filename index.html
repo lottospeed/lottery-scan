@@ -3,191 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ LOTTO X - 極速秒對系統 ⚡</title>
-    <!-- 引入開源 QR Code 掃描庫 -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>樂透大福星 🪙 | AI解夢與財神賜號</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1A1A1A">
+    <!-- PWA iOS 支援 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="樂透大福星">
+    
+    <!-- Google AdSense 廣告代碼區塊 (將來把你的 client ID 填入此處) -->
+    <!-- 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+    -->
+
     <style>
-        /* 深色科技感背景 */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: radial-gradient(circle at center, #0a1128 0%, #020617 100%);
-            color: #f8fafc;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        body { background-color: #121212; color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; align-items: center; }
+        header { width: 100%; max-width: 600px; background: #1A1A1A; padding: 20px; text-align: center; border-bottom: 2px solid #D4AF37; position: sticky; top: 0; z-index: 100; }
+        header h1 { color: #D4AF37; font-size: 24px; }
+        .nav-tabs { display: flex; width: 100%; max-width: 600px; background: #1A1A1A; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 15px; text-align: center; background: none; border: none; color: #888; font-size: 16px; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: #D4AF37; border-bottom-color: #D4AF37; font-weight: bold; }
+        .container { width: 100%; max-width: 600px; padding: 20px; flex: 1; display: none; }
+        .container.active { display: block; }
+        .card { background: #1A1A1A; padding: 25px; border-radius: 15px; border: 1px solid #2A2A2A; text-align: center; margin-bottom: 20px; }
+        .btn { background: #D4AF37; color: #000; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; transition: 0.3s; width: 100%; max-width: 250px; margin: 15px auto; display: block; }
+        .btn:hover { background: #F5D35C; transform: scale(1.03); }
+        .btn-purple { background: #8E24AA; color: #fff; }
+        .btn-purple:hover { background: #AB47BC; }
+        .balls-container { display: flex; justify-content: center; gap: 8px; margin: 25px 0; min-height: 45px; align-items: center; }
+        .ball { width: 42px; height: 42px; background: #FFA000; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); animation: bounce 0.4s ease; }
+        .ball.special { background: #E53935; color: #fff; }
+        textarea { width: 100%; height: 100px; background: #222; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 12px; font-size: 15px; resize: none; margin-top: 10px; }
+        textarea:focus { border-color: #8E24AA; outline: none; }
+        #ai-result { background: rgba(142, 36, 170, 0.1); border: 1px solid #8E24AA; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: left; line-height: 1.6; display: none; }
+        
+        /* 廣告版位佔位符 (符合 Google 政策，必須標示「廣告」) */
+        .ad-placeholder { background: #1A1A1A; border: 1px dashed #444; margin: 20px 0; padding: 10px; text-align: center; font-size: 12px; color: #666; }
+        
+        footer { width: 100%; max-width: 600px; text-align: center; padding: 20px; font-size: 12px; color: #666; border-top: 1px solid #222; margin-top: auto; }
+        footer a { color: #666; text-decoration: none; margin: 0 10px; }
+        footer a:hover { color: #D4AF37; }
+        
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
-        }
-
-        .subtitle {
-            font-size: 12px;
-            color: #94a3b8;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-        }
-
-        /* 掃描器外框容器 */
-        .scanner-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 24px;
-            padding: 4px;
-            background: linear-gradient(135deg, #fbbf24 0%, #1e293b 40%, #0f172a 100%);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 158, 11, 0.15);
-            overflow: hidden;
-        }
-
-        #reader {
-            width: 100%;
-            border-radius: 20px;
-            overflow: hidden;
-            border: none !important;
-            background: #020617;
-        }
-
-        /* 覆寫掃描套件內部醜陋的按鈕樣式 */
-        #reader button {
-            background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
-            color: #020617 !important;
-            border: none !important;
-            padding: 12px 24px !important;
-            font-weight: bold !important;
-            border-radius: 12px !important;
-            cursor: pointer !important;
-            margin: 15px auto !important;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4) !important;
-            transition: all 0.2s;
-        }
-        #reader button:hover { transform: scale(1.05); }
-
-        /* 毛玻璃質感對獎結果卡片 */
-        .result-card {
-            margin-top: 25px;
-            width: 100%;
-            max-width: 400px;
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            box-sizing: border-box;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .result-card h3 {
-            margin: 0 0 15px 0;
-            font-size: 16px;
-            color: #94a3b8;
-            letter-spacing: 1px;
-        }
-
-        .status-idle {
-            color: #38bdf8;
-            font-size: 15px;
-            animation: pulse 2s infinite;
-        }
-
-        .status-success {
-            color: #4ade80;
-            font-size: 20px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-        }
-
-        .raw-data {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 13px;
-            color: #cbd5e1;
-            word-break: break-all;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 15px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
+        .loading { display: none; color: #8E24AA; font-style: italic; margin: 15px 0; }
     </style>
 </head>
 <body>
 
-    <h1>LOTTO X</h1>
-    <div class="subtitle">Quantum Scan System</div>
-    
-    <!-- 奢華科技風掃描外框 -->
-    <div class="scanner-container">
-        <div id="reader"></div>
+    <header>
+        <h1>🪙 樂透大福星 🪙</h1>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('lucky')">🎰 財神賜號</button>
+        <button class="tab-btn" onclick="switchTab('dream')">🔮 AI 夢境解碼</button>
     </div>
 
-    <!-- 毛玻璃結果卡片 -->
-    <div class="result-card">
-        <h3>AI LIVE REALTIME DETECT</h3>
-        <div id="result-status" class="status-idle">📡 正在等待彩券條碼進入瞄準區域...</div>
-        <div id="result-details"></div>
+    <!-- 頂部廣告位 -->
+    <div class="ad-placeholder">【廣告】<br>Google AdSense 橫幅廣告位</div>
+
+    <!-- 頁籤 1: 財神選號 -->
+    <div id="lucky-tab" class="container active">
+        <div class="card">
+            <h2>財神爺神機妙算</h2>
+            <p style="color: #888; font-size: 14px; margin-top: 5px;">點擊按鈕，由財神為你凝聚今日最強大樂透號碼</p>
+            <div class="balls-container" id="balls-box">
+                <span style="color: #555;">尚未發功，請點擊下方按鈕</span>
+            </div>
+            <button class="btn" onclick="generateNumbers()">請財神賜號</button>
+        </div>
     </div>
+
+    <!-- 頁籤 2: AI 夢境解碼 -->
+    <div id="dream-tab" class="container">
+        <div class="card">
+            <h2>🔮 昨晚夢到了什麼？</h2>
+            <p style="color: #888; font-size: 14px; margin-top: 5px;">輸入你的夢境，讓 AI 大師為你化天機為明牌</p>
+            <textarea id="dream-input" placeholder="例如：夢到被金色的大蛇咬到手，旁邊還有一隻烏龜在爬..."></textarea>
+            <button class="btn btn-purple" onclick="decodeDream()">開示財富天機</button>
+            <div class="loading" id="loading-txt">AI 大師正在閉關解夢中...</div>
+            <div id="ai-result"></div>
+        </div>
+    </div>
+
+    <!-- 中部廣告位 -->
+    <div class="ad-placeholder">【廣告】<br>Google AdSense 內容廣告位</div>
+
+    <footer>
+        <p>© 2026 樂透大福星. 本站僅供娛樂參考，投注請勿過度。</p>
+        <p style="margin-top: 5px;">
+            <a href="privacy.html" target="_blank">隱私權政策</a> | 
+            <a href="#" onclick="alert('本應用已啟用 PWA 支援，您可透過瀏覽器選單「加入主畫面」離線使用！')">PWA 說明</a>
+        </p>
+    </footer>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            playBeep();
+        // 頁籤切換
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.container').forEach(con => con.classList.remove('active'));
+            if(tab === 'lucky') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('lucky-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('dream-tab').classList.add('active');
+            }
+        }
+
+        // 財神選號邏輯
+        function generateNumbers() {
+            const box = document.getElementById('balls-box');
+            box.innerHTML = '<span style="color:#D4AF37">財神發功中...</span>';
             
-            // 變更為成功狀態與光暈
-            document.getElementById('result-status').className = "status-success";
-            document.getElementById('result-status').innerHTML = "⚡ 掃描成功 ⚡";
+            setTimeout(() => {
+                box.innerHTML = '';
+                let nums = new Set();
+                while(nums.size < 6) {
+                    nums.add(Math.floor(Math.random() * 49) + 1);
+                }
+                let sortedNums = Array.from(nums).sort((a,b) => a-b);
+                let specialNum = Math.floor(Math.random() * 49) + 1;
+
+                sortedNums.forEach(n => {
+                    const b = document.createElement('div');
+                    b.className = 'ball';
+                    b.innerText = n.toString().padStart(2, '0');
+                    box.appendChild(b);
+                });
+
+                const sb = document.createElement('div');
+                sb.className = 'ball special';
+                sb.innerText = specialNum.toString().padStart(2, '0');
+                box.appendChild(sb);
+            }, 600);
+        }
+
+        // AI 夢境解碼 (這裡直接用模擬邏輯，避免把 API Key 暴露在前台網路。實際上架時，可引導使用者輸入或串接免費用戶 API)
+        function decodeDream() {
+            const input = document.getElementById('dream-input').value.trim();
+            if(!input) { alert('請先輸入夢境內容！'); return; }
             
-            // 顯示掃出來的資料
-            document.getElementById('result-details').innerHTML = `
-                <div class="raw-data">
-                    <strong>條碼資訊：</strong><br>${decodedText}
-                </div>
-                <p style="color: #fbbf24; font-size: 14px; margin-top: 15px;">
-                    [核心邏輯對接處] 系統已獲取資料，準備秒速比對中獎號碼...
-                </p>
-            `;
+            document.getElementById('loading-txt').style.display = 'block';
+            document.getElementById('ai-result').style.display = 'none';
+
+            setTimeout(() => {
+                document.getElementById('loading-txt').style.display = 'none';
+                const resultBox = document.getElementById('ai-result');
+                
+                // 產生一組隨機號碼
+                let n1 = Math.floor(Math.random()*48)+1;
+                let n2 = Math.floor(Math.random()*48)+1;
+                
+                resultBox.innerHTML = `<strong>【解夢分析】</strong>：您的夢境充滿靈動之氣。夢見此景在周公解夢中代表「水火既濟」，隱含偏財暗湧之兆，近期切莫錯過靈感。<br><br><strong>【財神明牌】</strong>：🔮 吉星高照號碼：<strong>06, 14, 23, 31, ${n1}, ${n2}</strong> | 特別號：<strong>08</strong><br><br><strong>【今日發財願】</strong>：財富如流水，行善方能留存。中獎後記得做點小善事，財運才會長長久久喔！`;
+                resultBox.style.display = 'block';
+            }, 1500);
         }
 
-        function onScanFailure(error) {
-            // 靜默處理，不打擾使用者對焦
+        // 註冊 PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA 註冊成功！Scope: ', reg.scope))
+                    .catch(err => console.log('PWA 註冊失敗: ', err));
+            });
         }
-
-        // 科技感短音效
-        function playBeep() {
-            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let oscillator = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.08);
-        }
-
-        // 啟動相機 (設定掃描框大小與每秒偵測偵數)
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 30, qrbox: { width: 250, height: 250 } }
-        );
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
 </body>
 </html>
